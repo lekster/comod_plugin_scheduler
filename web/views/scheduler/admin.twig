@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD Table</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/bootstrap-table.min.css" type="text/css">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/examples.css">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/ext/bootstrap-editable.css">
+
+
+    <style>
+        .update {
+            color: #333;
+            margin-right: 5px;
+        }
+        .remove {
+            color: red;
+            margin-left: 5px;
+        }
+        .link_dev {
+            color: blue;
+            margin-left: 5px;
+        }
+        .alert {
+            padding: 0 14px;
+            margin-bottom: 0;
+            display: inline-block;
+        }
+    </style>
+    <script language="javascript" src="/frontend/web/js_new/jq-3.1.1/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-table-1.11/bootstrap-table.min.js"></script>
+    <script src="/frontend/web/js_new/bootstrap-table-1.11/ga.js"></script>
+
+    <script src="/frontend/web/js_new/bootstrap-table-1.11/dist/extensions/editable/bootstrap-table-editable.js"></script>
+    <script src="/frontend/web/js_new/bootstrap-table-1.11/ext/bootstrap-editable.js"></script>
+
+
+</head>
+<body>
+
+  
+    {% include 'header_template.twig' %}
+
+
+    <div class="container">
+        <h3>Крон задачи</h3>
+        <p class="toolbar">
+            <a class="signup btn btn-default" data-userid="{{ object.id }}" href="javascript:">Create Item</a>
+            <span class="alert"></span>
+        </p>
+        <table id="table"
+               data-show-refresh="true"
+               data-show-columns="true"
+               data-show-export="true"
+               data-search="true"
+               data-url="/frontend/web/scheduler/get-tasks"
+               data-pagination="true"
+               data-page-list="[10,20, 50, 100]"
+               data-toolbar=".toolbar">
+            <thead>
+            <tr>
+                <th data-field="scheduler_job_template_id" data-visible="false">id</th>
+                <th data-field="name">Name</th> <!-- Нельзя менять после создание, юзается API только латинницей -->
+                <th data-field="description" data-editable="true">description</th> <!-- человеческое описание -->
+                <th data-field="_full_prop_name" data-formatter="link_dev_formatter" data-events="link_dev_events">link Object#Property</th>
+                <th data-field="start_at">start_at</th>
+                <!-- <th data-field="end_at">end_at</th>  не неужен нафиг в таблице -->
+                <th data-field="work_time_str">work_time</th>  <!--  в формате 1 hour Например, валидация strtottime--> 
+                <th data-field="task_start_id" data-visible="false">task_start_id</th>
+                <th data-field="task_end_id" data-visible="false">task_end_id</th>
+
+                <th data-field="action"
+                    data-align="center"
+                    data-formatter="actionFormatter"
+                    data-events="actionEvents">Action</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+
+
+
+<script>
+    
+    function link_dev_formatter(value, row, index)
+    {
+        
+      
+        return [
+            '<a class="update" href="javascript:" data-elemid="' + row.scheduler_job_template_id + '">',
+                value,
+            '</a>'].join('');
+
+            /*
+        return [
+            '<a class="like" href="javascript:void(0)" title="Like">',
+                value,
+            '</a>'].join('');
+        */
+    }
+
+    // update and delete events
+    window.link_dev_events = {
+        'click .update': function (e, value, row) {
+         
+
+            var url = 'signup2';
+            var clickedbtn = $(this);
+            var UserID = clickedbtn.data("elemid");
+             
+            var modalContainer = $('#my-modal2');
+            var modalBody = modalContainer.find('.modal-body2');
+            modalContainer.modal({show:true});
+            $.ajax({
+                url: url,
+                type: "GET",
+                data: {'elemid':UserID},
+                success: function (data) {
+                    $('.modal-body2').html(data);
+                    modalContainer.modal({show:true});
+                }
+            });
+        },
+
+    }
+
+
+
+var API_URL = 'http://pbr-wifc-asm-test.asmirnov.vps7095.mtu.immo/frontend/web/objects/getproperties?id={{ object_id }}';
+/*
+    $(document).ready(function(){
+  $.ajax({
+       url: API_URL,
+       dataType: 'json',
+       success: function(data) {
+           console.log(JSON.stringify(data['properties']));
+           //var t = JSON.parse(data)
+
+           $('#table').bootstrapTable({
+              //data: data['properties']
+              data: data['properties']
+           });
+       },
+       error: function(e) {
+           console.log(e.responseText);
+       }
+    });
+ });    
+*/
+
+
+    
+    //var t = JSON.parse
+    //var _csrf = "{{  csrfToken }}";
+
+    //var $table = $('#table').bootstrapTable({url: API_URL}),
+    var $table = $('#table').bootstrapTable({}),
+        $modal = $('#modal').modal({show: false}),
+        $alert = $('.alert').hide();
+    $(function () {
+        // create event
+        $('.create').click(function () {
+            showModal($(this).text());
+        });
+        $modal.find('.submit').click(function () {
+            var row = {};
+            $modal.find('input[name]').each(function () {
+                row[$(this).attr('name')] = $(this).val();
+            });
+            $.ajax({
+                url: API_URL + ($modal.data('id') || ''),
+                type: $modal.data('id') ? 'put' : 'post',
+                contentType: 'application/json',
+                data: JSON.stringify(row),
+                success: function () {
+                    $modal.modal('hide');
+                    $table.bootstrapTable('refresh');
+                    showAlert(($modal.data('id') ? 'Update' : 'Create') + ' item successful!', 'success');
+                },
+                error: function () {
+                    $modal.modal('hide');
+                    showAlert(($modal.data('id') ? 'Update' : 'Create') + ' item error!', 'danger');
+                }
+            });
+        });
+
+
+
+
+
+    $(document).on("submit", '.signup-form2', function (e) {
+                e.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: "submitsignup2",
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function (result) {
+                        //console.log(result);
+                        var modalContainer = $('#my-modal2');
+                        var modalBody = modalContainer.find('.modal-body2');
+                var insidemodalBody = modalContainer.find('.gb-user-form2');
+
+                if (result == 1) {
+                insidemodalBody.html(result).hide(); // 
+                 //$('#my-modal').modal('hide');
+                                 $('#success').html("<div class='alert alert-success'>");
+                                $('#success > .alert-success').append("<strong>Спасибо! Ваше сообщение отправлено.</strong>");
+                $('#success > .alert-success').append('</div>');
+
+                setTimeout(function() { // скрываем modal через 2 секунды
+                $("#my-modal2").modal('hide');
+                }, 2000);
+                //location.reload();   
+                $table.bootstrapTable('refresh'); 
+                                }
+                                else {
+                                    modalBody.html(result).hide().fadeIn();
+                                }
+                            }
+                        });
+
+            
+            });
+
+
+
+        
+
+        $(document).ready(function () {
+
+    $('.signup').click(function(event){ // нажатие на кнопку - выпадает модальное окно
+        event.preventDefault();
+         
+
+        var url = 'signup';
+        var clickedbtn = $(this);
+        var UserID = clickedbtn.data("userid");
+         
+        var modalContainer = $('#my-modal');
+        var modalBody = modalContainer.find('.modal-body');
+        modalContainer.modal({show:true});
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: {'userid':UserID},
+            success: function (data) {
+                $('.modal-body').html(data);
+                modalContainer.modal({show:true});
+            }
+        });
+    });
+    $(document).on("submit", '.signup-form', function (e) {
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: "submitsignup",
+            type: "POST",
+            data: form.serialize(),
+            success: function (result) {
+                //console.log(result);
+                var modalContainer = $('#my-modal');
+                var modalBody = modalContainer.find('.modal-body');
+var insidemodalBody = modalContainer.find('.gb-user-form');
+
+if (result == 1) {
+insidemodalBody.html(result).hide(); // 
+ //$('#my-modal').modal('hide');
+                 $('#success').html("<div class='alert alert-success'>");
+                $('#success > .alert-success').append("<strong>Спасибо! Ваше сообщение отправлено.</strong>");
+$('#success > .alert-success').append('</div>');
+
+setTimeout(function() { // скрываем modal через 2 секунды
+$("#my-modal").modal('hide');
+}, 2000);
+//location.reload();
+$table.bootstrapTable('refresh');    
+                }
+                else {
+                    modalBody.html(result).hide().fadeIn();
+                }
+            }
+        });
+
+    
+    });
+
+});
+
+
+
+
+
+
+
+    });
+    function queryParams(params) {
+        return {};
+    }
+    function actionFormatter(value) {
+        return [
+            '<a class="update" href="javascript:" title="Update Item"><i class="glyphicon glyphicon-edit"></i></a>',
+            '<a class="remove" href="javascript:" title="Delete Item"><i class="glyphicon glyphicon-remove-circle"></i></a>',
+            //'<a class="link_dev" href="javascript:" title="Link device"><i class="glyphicon glyphicon-link"></i></a>',
+        ].join('');
+    }
+    // update and delete events
+    window.actionEvents = {
+        'click .update': function (e, value, row) {
+            //showModal($(this).attr('title'), row);
+            window.location.replace("edit?task_id=" + row.scheduler_job_template_id);
+        },
+        'click .remove': function (e, value, row) {
+            if (confirm('Are you sure to delete this item?')) {
+                console.log(value);
+                console.log(e);
+                console.log(row);
+                $.ajax({
+                    url: 'deleteproperties',
+                    type: 'get',
+                    data: ({'id': row['object_id'] , 'prop_id':  row['id']}),
+                    success: function () {
+                        $table.bootstrapTable('refresh');
+                        showAlert('Delete item successful!', 'success');
+                    },
+                    error: function () {
+                        showAlert('Delete item error!', 'danger');
+                    }
+                })
+            }
+        },
+
+
+
+
+    };
+    function showModal(title, row) {
+        row = row || {
+            id: '',
+            name: '',
+            stargazers_count: 0,
+            forks_count: 0,
+            description: ''
+        }; // default row value
+        $modal.data('id', row.id);
+        $modal.find('.modal-title').text(title);
+        for (var name in row) {
+            $modal.find('input[name="' + name + '"]').val(row[name]);
+        }
+        $modal.modal('show');
+    }
+    function showAlert(title, type) {
+        $alert.attr('class', 'alert alert-' + type || 'success')
+              .html('<i class="glyphicon glyphicon-check"></i> ' + title).show();
+        setTimeout(function () {
+            $alert.hide();
+        }, 3000);
+    }
+
+
+    $table.on('editable-save.bs.table', function(field, row, oldValue, $el){
+        //console.log(field);
+        console.log(oldValue);
+        //console.log(row[value]);
+        //console.log(oldValue);
+        //console.log($el);
+        
+        $.ajax({
+            url: "updateproperty",
+            type: "POST",
+            data: ({'object_id': oldValue['object_id'], 'pval_id':oldValue['pval_id'], 'version': oldValue['version'], 'value': oldValue['value'], 'property_id': oldValue['id'], "_csrf": "{{ csrfToken }}" }),
+            success: function () {
+                $table.bootstrapTable('refresh');
+                showAlert('Update item successful!', 'success');
+            },
+            error: function () {
+                showAlert('Update item error!', 'danger');
+            }
+        })
+
+    });
+
+
+</script>
+</body>
+</html>
+

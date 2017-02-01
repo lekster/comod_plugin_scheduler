@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD Table</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/bootstrap-table.min.css" type="text/css">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/examples.css">
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/ext/bootstrap-editable.css">
+
+
+    <style>
+        .update {
+            color: #333;
+            margin-right: 5px;
+        }
+        .remove {
+            color: red;
+            margin-left: 5px;
+        }
+        .link_dev {
+            color: blue;
+            margin-left: 5px;
+        }
+        .alert {
+            padding: 0 14px;
+            margin-bottom: 0;
+            display: inline-block;
+        }
+    </style>
+    <script language="javascript" src="/frontend/web/js_new/jq-3.1.1/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-table-1.11/bootstrap-table.min.js"></script>
+    <script src="/frontend/web/js_new/bootstrap-table-1.11/ga.js"></script>
+
+    <script src="/frontend/web/js_new/bootstrap-table-1.11/dist/extensions/editable/bootstrap-table-editable.js"></script>
+    <script src="/frontend/web/js_new/bootstrap-table-1.11/ext/bootstrap-editable.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/frontend/web/js_new/bootstrap-select/dist/css/bootstrap-select.min.css" />
+<script type="text/javascript" src="/frontend/web/js_new/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+
+<script>
+
+$('.selectpicker').selectpicker({
+  style: 'btn-info',
+  size: 4
+});
+
+</script>
+
+</head>
+<body>
+  
+    {% include 'header_template.twig' %}
+
+    <form action="edit" method="post" name="frmEdit">
+        <div class="col-lg-6">
+        <div class="form-group">
+        
+        <table class="table">   
+        <tr>
+            <td>
+                <label for="method">Name</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="name" value= "{{ task.name }}" />
+            </td>
+        </tr>    
+
+        <tr>
+            <td>
+                <label>Description</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="description" value= "{{ task.description }}" />
+            </td>
+        </tr>
+
+            <tr>
+            <td>
+            <label for="method">Methods</label>
+            </td>
+            <td>
+            <select class="form-control selectpicker" data-live-search="true" id="method" name="method"> 
+                <option></option>
+                {% for obj_name, props in methods %}
+                    <optgroup label="{{ obj_name }}">
+                        {% for prop in props %}
+                            <option {% if task.property_id == prop.prop_id and task.object_id == prop.obj_id %} selected  {% endif %} value="{{  prop.obj_id }}_{{ prop.prop_id }}"  >{{obj_name}}::{{ prop.title }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endfor %}
+            </select>
+        </td>
+        </tr>
+        
+
+
+        <tr>
+            <td>
+                <label>Predef int</label>
+            </td>
+            <td>    
+                <select class="form-control" id="times">
+                <option></option>
+                <option value="* * * * *">Minutely</option>
+                <option value="0 * * * *">Hourly</option>
+                <option value="0 0 * * *">Daily</option>
+                <option value="0 0 * * 0">Weekly</option>
+                <option value="0 0 1 * *">Monthly</option>
+                <option value="0 0 1 1 *">Yearly</option>
+            </select>
+            </td>
+        </tr>
+            
+        <tr>
+            <td>
+                <label>Start at</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="start_at" id="task-time" value={% if task.start_at %} "{{ task.start_at }}" {% else %} "* * * * *" {% endif %} />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>work time</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="work_time" value= "{{ task.work_time_str }}" />
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <label>task_type</label>
+            </td>
+            <td>    
+                <select class="form-control" name="type_action">
+                <option></option>
+                {% for name,val in task_types %}
+                    <option {% if task.type_action == val %} selected  {% endif %} value="{{ val }}"  >{{ name }}</option>
+                {% endfor %}
+            </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>value_at_start</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="value_at_start" value= "{{ task.value_at_start }}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>value_at_end</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="value_at_end" value= "{{ task.value_at_end }}" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>options</label>
+            </td>
+            <td>    
+                <input type="text" class="form-control" name="options" value= "{{ task.options }}" />
+            </td>
+        </tr>
+        
+
+        <tr>
+            <td>
+                <label>is active</label>
+            </td>
+            <td>    
+                <input type="checkbox" class="form-control" name="is_active" value="1" {% if task.is_active >  0 %} checked {% endif %}  >
+            </td>
+        </tr>
+        
+
+    </table>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+
+        </div>
+        </div>
+
+       
+       
+
+    <div class="col-lg-6">
+        <div class="form-group">
+
+        <pre>
+*    *    *    *    *
+-    -    -    -    -
+|    |    |    |    |
+|    |    |    |    |
+|    |    |    |    +----- day of week (0 - 7) (Sunday=0 or 7)
+|    |    |    +---------- month (1 - 12)
+|    |    +--------------- day of month (1 - 31)
+|    +-------------------- hour (0 - 23)
++------------------------- min (0 - 59)
+    </pre>
+        <h4>Next runs</h4>
+        <div id="dates_list"></div>
+    </div>
+
+    <input type="hidden" id="csrf" name="_csrf" value="{{ csrfToken }}" />
+    <input type="hidden" id="scheduler_job_template_id" name="scheduler_job_template_id" value="{{ task.scheduler_job_template_id }}" />
+    </div>
+    </form>
+
+</body>
+</html>
+

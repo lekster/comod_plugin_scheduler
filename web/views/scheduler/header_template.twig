@@ -1,0 +1,25 @@
+
+
+{% set menu = 
+	{ 
+		'admin': 'Tasks list', 
+        'edit': 'Add new/edit task', 
+        'task-log': 'Logs',
+        'export': 'Import/Export',
+        'tasks-report': 'Report' 
+    } 
+%}
+
+<script src="manager_actions.js"></script>
+<div class="col-lg-10">
+    <h2>Cron tasks manager</h2>
+
+    <ul class="nav nav-tabs">
+        {% for m, text in menu %}
+            <li class= {% if action_name == m %} "active" {% else %} "" {% endif %}  ><a href="{{ m }}">{{ text }}</a></li>
+        {% endfor %}
+    </ul>
+    <br>
+    
+</div>
+

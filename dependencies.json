@@ -1,0 +1,69 @@
+{
+    "name": "Scheduler",
+    "type": "plugin",
+    "description": "Twig, the flexible, fast, and secure template language for PHP",
+    "version":"0.0.5",
+    "keywords": ["comod", "plugin"],
+    "homepage": "http://twig.sensiolabs.org",
+    "upgradelink": "http://twig.sensiolabs.org",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Fabien Potencier",
+            "email": "fabien@symfony.com",
+            "homepage": "http://fabien.potencier.org",
+            "role": "Lead Developer"
+        },
+        {
+            "name": "Twig Team",
+            "homepage": "http://twig.sensiolabs.org/contributors",
+            "role": "Contributors"
+        },
+        {
+            "name": "Armin Ronacher",
+            "email": "armin.ronacher@active-4.com",
+            "role": "Project Founder"
+        }
+    ],
+    "support": {
+        "forum": "https://groups.google.com/forum/#!forum/twig-users"
+    },
+    "require": {
+        "sys_version": ">=0.0.4"
+    },
+    "require-dev": {
+        "symfony/phpunit-bridge": "~2.7",
+        "symfony/debug": "~2.7"
+    },
+    "autoload": {
+        "psr-0" : {
+            "Twig_" : "lib/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.22-dev"
+        }
+    },
+    "properties": [
+        {
+            "name": "FabienPotencier",
+            "val": "fabien@symfony.com111",
+            "type": "string",
+            "options": "123"
+        },
+        {
+            "name": "FabienPotencier2",
+            "val": "fabien@symfony.com",
+            "description": "fabien@symfony.com",
+            "type": "select",
+            "options":{"values":["ru","en"]}
+        },
+        {
+            "name": "mqtt_host",
+            "val": "vps172202180.mtu.immo",
+            "type": "string",
+            "options": "123"
+        }
+    ]
+}
