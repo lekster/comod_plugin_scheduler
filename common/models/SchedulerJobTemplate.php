@@ -15,6 +15,9 @@ use common\models\Properties;
 class SchedulerJobTemplate extends ActiveRecord
 {
 
+	const TASK_ACTION_CHANGE = 1;
+	const TASK_ACTION_REVERT = 2;
+
 	public $_obj_property;
 
     public static function tableName()

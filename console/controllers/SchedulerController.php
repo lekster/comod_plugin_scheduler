@@ -25,19 +25,8 @@ set_time_limit(0);
 
 class SchedulerController extends Controller
 {
-	const TASK_TYPE_CHANGE = 1;
-	const TASK_TYPE_REVERT = 2;
-	
-
 	public function actionRun()
 	{
-		/*
-			запускается раз в минуту
-			ищет таски готовые к выполнению в ближайшую минуту
-			Если нашел создает таски на выполнение сразу с закрытием c указанием date_to_run
-				добавить в таблицу id связанных тасков task_start_id, task_end_id
-		*/
-
 		$tasks = SchedulerJobTemplate::find()->where(["<=", 'next_run_time', "now()"])->andWhere(["is_active" => true]) ->all();
 		foreach ($tasks as $task)
 		{
@@ -52,7 +41,7 @@ class SchedulerController extends Controller
 			{
 
 				switch ($task->type_action) {
-					case self::TASK_TYPE_CHANGE:
+					case SchedulerJobTemplate::TASK_ACTION_CHANGE:
 						 $obj->setValueByPropertyId($task->property_id, $task->value_at_start);
 
 						  $t = new Tasks();
@@ -71,11 +60,14 @@ class SchedulerController extends Controller
 				          $task->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
 				          $task->save();
 
-						break;
+					break;
 					
-					case self::TASK_TYPE_REVERT:
-						# code...
-						break;
+					case SchedulerJobTemplate::TASK_ACTION_REVERT:
+						$cron = \Cron\CronExpression::factory($task->start_at);
+						$task->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
+						$task->save();
+						
+					break;
 
 					default:
 						# code... UNKNOWN TYPE!
@@ -95,10 +87,8 @@ class SchedulerController extends Controller
           
           //echo $cron->getPreviousRunDate()->format('Y-m-d H:i:s');
 
-
-          die();
-          // Works with complex expressions
-          $cron = \Cron\CronExpression::factory('3-59/15 2,6-12 */15 1 2-5');
+          /*
+          $cron = \Cron\CronExpression::factory('3-59/15 2,6-12 15 1 2-5');
           echo $cron->getNextRunDate()->format('Y-m-d H:i:s');
 
           // Calculate a run date two iterations into the future
@@ -108,6 +98,7 @@ class SchedulerController extends Controller
           // Calculate a run date relative to a specific time
           $cron = \Cron\CronExpression::factory('@monthly');
           echo $cron->getNextRunDate('2010-01-12 00:00:00')->format('Y-m-d H:i:s');
+          */
 	}
 
 

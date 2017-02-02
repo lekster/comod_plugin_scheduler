@@ -47,7 +47,6 @@
     <div class="container">
         <h3>Крон задачи</h3>
         <p class="toolbar">
-            <a class="signup btn btn-default" data-userid="{{ object.id }}" href="javascript:">Create Item</a>
             <span class="alert"></span>
         </p>
         <table id="table"
@@ -63,7 +62,7 @@
             <tr>
                 <th data-field="scheduler_job_template_id" data-visible="false">id</th>
                 <th data-field="name">Name</th> <!-- Нельзя менять после создание, юзается API только латинницей -->
-                <th data-field="description" data-editable="true">description</th> <!-- человеческое описание -->
+                <th data-field="description">description</th> <!-- человеческое описание -->
                 <th data-field="_full_prop_name" data-formatter="link_dev_formatter" data-events="link_dev_events">link Object#Property</th>
                 <th data-field="start_at">start_at</th>
                 <!-- <th data-field="end_at">end_at</th>  не неужен нафиг в таблице -->
@@ -318,9 +317,9 @@ $table.bootstrapTable('refresh');
                 console.log(e);
                 console.log(row);
                 $.ajax({
-                    url: 'deleteproperties',
+                    url: 'delete',
                     type: 'get',
-                    data: ({'id': row['object_id'] , 'prop_id':  row['id']}),
+                    data: ({'task_id': row['scheduler_job_template_id']}),
                     success: function () {
                         $table.bootstrapTable('refresh');
                         showAlert('Delete item successful!', 'success');

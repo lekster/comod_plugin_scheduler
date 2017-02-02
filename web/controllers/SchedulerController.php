@@ -31,8 +31,9 @@ class SchedulerController extends Controller
 {
 
   protected $lang;
-  protected $task_types = ['Change' => 1,
-    'Revert' => 2,
+  protected $task_types = [
+    'Change' => SchedulerJobTemplate::TASK_ACTION_CHANGE,
+    'Revert' => SchedulerJobTemplate::TASK_ACTION_REVERT,
     ];
 
 
@@ -107,21 +108,17 @@ class SchedulerController extends Controller
 
     }
 
+    public function actionDelete($task_id)
+    {
+      $rec = SchedulerJobTemplate::find()->where(['scheduler_job_template_id' => $task_id])->one();
+      $rec->delete();
+    }
+
 
     public function actionEdit($task_id = null)
     {
-
       $methods = [];
-      if (!$task_id)
-      {
-        //new task
-        $rec = new SchedulerJobTemplate();
-
-      }
-      else
-      {
-          $rec = SchedulerJobTemplate::find()->where(['scheduler_job_template_id' => $task_id])->one();
-      }
+      $rec = ($task_id) ? SchedulerJobTemplate::find()->where(['scheduler_job_template_id' => $task_id])->one() : new SchedulerJobTemplate();
 
       foreach (Objects::find()->all() as $obj)
       {
@@ -167,23 +164,9 @@ class SchedulerController extends Controller
         list($rec->object_id, $rec->property_id) = explode("_", $post['method'], 2);
         $rec->save();
 
-        /*$rec-> = $post[''];
-        options text,
-        */
-
         $controller = Yii::$app->controller;
         $params = array_merge(["{$controller->id}/edit", "task_id" => $rec->scheduler_job_template_id]);
         $this->redirect(\Yii::$app->urlManager->createUrl($params));
-      }
-
-      try
-      {
-        $cron = \Cron\CronExpression::factory('* * * * 1*');
-        echo $cron->getNextRunDate()->format('Y-m-d H:i:s');
-      }
-      catch (\InvalidArgumentException $e)
-      {
-        //var_dump($e->getMessage());
       }
 
       $out = array_merge([], 
@@ -207,6 +190,36 @@ class SchedulerController extends Controller
         $rec = SchedulerJobTemplate::find()->offset($offset)->limit($limit)->orderBy(['scheduler_job_template_id' => ($order == 'asc') ? SORT_ASC : SORT_DESC])->all();
         $r = array_map(function ($x) { return $x->toArray(); }, $rec);
         return json_encode($r);
+    }
+
+
+    public function actionValidate()
+    {
+        $param = array_keys($_GET)[0];
+        switch ($param) {
+          case 'work_time':
+            $work_time = strtotime($_GET[$param], 0);
+            if ($work_time === false)
+              Yii::$app->response->statusCode = 500; 
+            break;
+
+          case 'start_at':
+            try
+            {
+              $cron = \Cron\CronExpression::factory($_GET[$param]);
+            }
+            catch (\InvalidArgumentException $e)
+            {
+              Yii::$app->response->statusCode = 500;
+            }
+            break;
+
+          default:
+            Yii::$app->response->statusCode = 500; 
+            break;
+        }
+
+        
     }
 
 

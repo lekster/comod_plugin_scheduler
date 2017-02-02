@@ -4,38 +4,10 @@
     <title>CRUD Table</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/bootstrap-table.min.css" type="text/css">
-    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/examples.css">
-    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-table-1.11/ext/bootstrap-editable.css">
 
-
-    <style>
-        .update {
-            color: #333;
-            margin-right: 5px;
-        }
-        .remove {
-            color: red;
-            margin-left: 5px;
-        }
-        .link_dev {
-            color: blue;
-            margin-left: 5px;
-        }
-        .alert {
-            padding: 0 14px;
-            margin-bottom: 0;
-            display: inline-block;
-        }
-    </style>
     <script language="javascript" src="/frontend/web/js_new/jq-3.1.1/jquery-3.1.1.js"></script>
     <script type="text/javascript" src="/frontend/web/js_new/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-table-1.11/bootstrap-table.min.js"></script>
-    <script src="/frontend/web/js_new/bootstrap-table-1.11/ga.js"></script>
-
-    <script src="/frontend/web/js_new/bootstrap-table-1.11/dist/extensions/editable/bootstrap-table-editable.js"></script>
-    <script src="/frontend/web/js_new/bootstrap-table-1.11/ext/bootstrap-editable.js"></script>
-
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-validator/dist/validator.js"></script>
     <link rel="stylesheet" type="text/css" href="/frontend/web/js_new/bootstrap-select/dist/css/bootstrap-select.min.css" />
 <script type="text/javascript" src="/frontend/web/js_new/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
@@ -54,9 +26,9 @@ $('.selectpicker').selectpicker({
   
     {% include 'header_template.twig' %}
 
-    <form action="edit" method="post" name="frmEdit">
+    <form action="edit" method="post" name="frmEdit" data-toggle="validator">
         <div class="col-lg-6">
-        <div class="form-group">
+        
         
         <table class="table">   
         <tr>
@@ -64,7 +36,10 @@ $('.selectpicker').selectpicker({
                 <label for="method">Name</label>
             </td>
             <td>    
-                <input type="text" class="form-control" name="name" value= "{{ task.name }}" />
+                <div class="form-group">
+                <input type="text" class="form-control" name="name" value= "{{ task.name }}" pattern="[A-Za-z_0-9]+"  data-error="only latin characters" required />
+                <div class="help-block with-errors"></div>
+                </div>
             </td>
         </tr>    
 
@@ -72,8 +47,11 @@ $('.selectpicker').selectpicker({
             <td>
                 <label>Description</label>
             </td>
-            <td>    
-                <input type="text" class="form-control" name="description" value= "{{ task.description }}" />
+            <td>
+                <div class="form-group">    
+                <input type="text" class="form-control" name="description" value= "{{ task.description }}" required />
+                <div class="help-block with-errors"></div>
+                </div>
             </td>
         </tr>
 
@@ -118,8 +96,11 @@ $('.selectpicker').selectpicker({
             <td>
                 <label>Start at</label>
             </td>
-            <td>    
-                <input type="text" class="form-control" name="start_at" id="task-time" value={% if task.start_at %} "{{ task.start_at }}" {% else %} "* * * * *" {% endif %} />
+            <td> 
+                <div class="form-group">   
+                <input type="text" class="form-control" name="start_at" data-remote="validate" data-error="bad expression" id="task-time" value={% if task.start_at %} "{{ task.start_at }}" {% else %} "* * * * *" {% endif %} />
+                <div class="help-block with-errors"></div>
+                </div>
             </td>
         </tr>
 
@@ -128,7 +109,10 @@ $('.selectpicker').selectpicker({
                 <label>work time</label>
             </td>
             <td>    
-                <input type="text" class="form-control" name="work_time" value= "{{ task.work_time_str }}" />
+                <div class="form-group">
+                <input type="text" class="form-control" name="work_time" data-remote="validate" data-error="bad expression" value= "{{ task.work_time_str }}" />
+                <div class="help-block with-errors"></div>
+                </div>
             </td>
         </tr>
         
@@ -137,12 +121,15 @@ $('.selectpicker').selectpicker({
                 <label>task_type</label>
             </td>
             <td>    
-                <select class="form-control" name="type_action">
+                <div class="form-group">
+                <select class="form-control" name="type_action" required>
                 <option></option>
                 {% for name,val in task_types %}
                     <option {% if task.type_action == val %} selected  {% endif %} value="{{ val }}"  >{{ name }}</option>
                 {% endfor %}
             </select>
+            <div class="help-block with-errors"></div>
+            </div>
             </td>
         </tr>
         <tr>
@@ -188,7 +175,7 @@ $('.selectpicker').selectpicker({
         <button type="submit" class="btn btn-primary">Save</button>
 
         </div>
-        </div>
+        
 
        
        
