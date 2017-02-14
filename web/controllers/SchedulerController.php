@@ -143,8 +143,15 @@ class SchedulerController extends Controller
         else
         {
           $rec = new SchedulerJobTemplate();
-          $cron = \Cron\CronExpression::factory($post['start_at']);
-          $rec->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
+          if (strtotime($post['start_at']) === false)
+          { 
+            $cron = \Cron\CronExpression::factory($post['start_at']);
+            $rec->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
+          }
+          else
+          {
+            $rec->next_run_time = date("Y-m-d H:i:s", strtotime($post['start_at']));
+          }
         }
 
         $rec->name = $post['name'];
@@ -185,6 +192,11 @@ class SchedulerController extends Controller
     }
 
 
+    public function actionTest()
+    {
+        return $this->renderPartial('test.twig', []);
+    }
+
     public function actionGetTasks($order = 'asc', $offset = null, $limit = null)
     {
         $rec = SchedulerJobTemplate::find()->offset($offset)->limit($limit)->orderBy(['scheduler_job_template_id' => ($order == 'asc') ? SORT_ASC : SORT_DESC])->all();
@@ -204,14 +216,24 @@ class SchedulerController extends Controller
             break;
 
           case 'start_at':
+            
+            $result = true;
             try
             {
+              $cron_result = true;
               $cron = \Cron\CronExpression::factory($_GET[$param]);
             }
             catch (\InvalidArgumentException $e)
             {
-              Yii::$app->response->statusCode = 500;
+              $cron_result = false;
+              
             }
+
+            $strtotimeResult = !(strtotime($_GET[$param], 0) === false);
+
+            if (!($cron_result || $strtotimeResult))
+              Yii::$app->response->statusCode = 500;  
+
             break;
 
           default:

@@ -44,28 +44,33 @@ class SchedulerController extends Controller
 					case SchedulerJobTemplate::TASK_ACTION_CHANGE:
 						 $obj->setValueByPropertyId($task->property_id, $task->value_at_start);
 
-						  $t = new Tasks();
-				          $t->type = Tasks::TYPE_SET_OBJECT_VAL;
-				          $t->params = json_encode(['name' => $obj->title, 'property_name' => $prop->title, 'value' => $task->value_at_end]);
-				          $t->date_to_run = date('Y-m-d H:i:s', time() + $task->work_time);
-				          $t->groups = md5($obj->title . "|" . $prop->title);
-				          $t->save();
-
-				          $sj = new SchedulerJobs();
+						  $sj = new SchedulerJobs();
 				          $sj->scheduler_job_template_id = $task->scheduler_job_template_id;
-				          $sj->task_end_id = $t->task_id;
+				          
+						  if ($task->work_time > 0)
+						  {
+							  $t = new Tasks();
+					          $t->type = Tasks::TYPE_SET_OBJECT_VAL;
+					          $t->params = json_encode(['name' => $obj->title, 'property_name' => $prop->title, 'value' => $task->value_at_end]);
+					          $t->date_to_run = date('Y-m-d H:i:s', time() + $task->work_time);
+					          $t->groups = md5($obj->title . "|" . $prop->title);
+					          $t->save();
+					      	
+					      	$sj->task_end_id = $t->task_id;
+				          
+					      }
 				          $sj->save();
 
-				          $cron = \Cron\CronExpression::factory($task->start_at);
-				          $task->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
-				          $task->save();
+				          if (strtotime($task->start_at) === false)
+				          {
+				          	$cron = \Cron\CronExpression::factory($task->start_at);
+				          	$task->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
+				          	$task->save();
+				          }
 
 					break;
 					
 					case SchedulerJobTemplate::TASK_ACTION_REVERT:
-						$cron = \Cron\CronExpression::factory($task->start_at);
-						$task->next_run_time = $cron->getNextRunDate()->format('Y-m-d H:i:s');
-						$task->save();
 						
 					break;
 

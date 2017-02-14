@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD Table</title>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="/frontend/web/js_new/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css">
+
+    <script language="javascript" src="/frontend/web/js_new/jq-3.1.1/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/frontend/web/js_new/bootstrap-validator/dist/validator.js"></script>
+    <link rel="stylesheet" type="text/css" href="/frontend/web/js_new/bootstrap-select/dist/css/bootstrap-select.min.css" />
+<script type="text/javascript" src="/frontend/web/js_new/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="moment-2.17.1/min/moment.min.js"></script>
+<script type="text/javascript" src="moment-2.17.1/locale/ru.js"></script>
+<script type="text/javascript" src="bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" href="bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/weekline/styles/jquery.weekLine.css" />
+<link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/weekline/styles/cleanslate.css" />
+<script type="text/javascript" src="/frontend/web/scheduler/weekline/scripts/jquery.weekLine.js"></script>
+
+<script src="/frontend/web/scheduler/timedropper/timedropper.js"></script>
+<link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/timedropper/timedropper.css"> 
+
+<script>
+
+$('.selectpicker').selectpicker({
+  style: 'btn-info',
+  size: 4
+});
+
+$(function() {
+  
+   $("#weekCal").weekLine({
+        onChange: function () {
+                $("#selectedDays").html(
+                        $(this).weekLine('getSelected', 'indexes')
+                );
+        }
+    });
+//http://codebits.weebly.com/plugins/category/weekline-day-picker#0
+
+    $( "#alarm" ).timeDropper();
+
+});
+
+</script>
+
+
+
+<script>
+ function collapsElement(id) {
+ if ( document.getElementById(id).style.display != "none" ) {
+ document.getElementById(id).style.display = 'none';
+ }
+ else {
+ document.getElementById(id).style.display = '';
+ //document.getElementById(id).slideDown('slow');
+
+ }
+ }
+ </script>
+
+</head>
+<body>
+  
+
+<div><a class="open-content" href="javascript:collapsElement('opencontent')" title="" rel="nofollow">Периодическое</a>
+    <div id="opencontent" style="display: none">
+        <div>
+            <span id="weekCal" class="cleanslate weekDays-dark"></span>
+            <textarea id="selectedDays" rows="3" cols="30" style=""></textarea>
+            <input type="text" id="alarm" />
+            
+        </div>
+    </div>
+</div>
+
+
+
+<div><a class="open-content" href="javascript:collapsElement('opencontent2')" title="" rel="nofollow">Разовое</a>
+    <div id="opencontent2" style="display: none">
+        <div>
+            <div class='input-group date' id='datetimepicker1'>
+                                <input type='text' class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+
+                            <script type="text/javascript">
+                        $(function () {
+                            $('#datetimepicker1').datetimepicker({
+                                locale: 'ru'
+                            });
+            });
+                    </script>
+        </div>
+    </div>
+</div>
+  
+
+
+
+
+
+
+
+</body>
+</html>
+

@@ -12,6 +12,16 @@
 <script type="text/javascript" src="/frontend/web/js_new/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
 
 
+
+
+<script type="text/javascript" src="moment-2.17.1/min/moment.min.js"></script>
+<script type="text/javascript" src="bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" href="bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/weekline/styles/jquery.weekLine.css" />
+<link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/weekline/styles/cleanslate.css" />
+<script type="text/javascript" src="/frontend/web/scheduler/weekline/scripts/jquery.weekLine.js"></script>
+
 <script>
 
 $('.selectpicker').selectpicker({
@@ -19,16 +29,30 @@ $('.selectpicker').selectpicker({
   size: 4
 });
 
+$(function() {
+  $("#weekCal").weekLine(); 
+});
+
 </script>
+
 
 </head>
 <body>
   
+
     {% include 'header_template.twig' %}
+
+<div>
+<span id="weekCal" class="cleanslate weekDays-dark weekCal"></span>
+</div>
+
+
+
 
     <form action="edit" method="post" name="frmEdit" data-toggle="validator">
         <div class="col-lg-6">
         
+
         
         <table class="table">   
         <tr>
@@ -101,6 +125,31 @@ $('.selectpicker').selectpicker({
                 <input type="text" class="form-control" name="start_at" data-remote="validate" data-error="bad expression" id="task-time" value={% if task.start_at %} "{{ task.start_at }}" {% else %} "* * * * *" {% endif %} />
                 <div class="help-block with-errors"></div>
                 </div>
+
+
+                <input type="radio" name="is_periodic" value="1" checked>yes<br>
+                <input type="radio" name="is_periodic" value="0">no<br>
+
+                <input type="radio" name="is_periodic" id="always" value="1"/>
+                <label for="always">no</label>
+
+                <input type="radio" name="is_periodic" id="never" value="0"/>
+                <label for="never">yes</label>
+
+                <div class='input-group date' id='datetimepicker1'>
+                                <input type='text' class="form-control" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+
+                            <script type="text/javascript">
+                        $(function () {
+                            $('#datetimepicker1').datetimepicker();
+                        });
+                    </script>
+
+
             </td>
         </tr>
 
