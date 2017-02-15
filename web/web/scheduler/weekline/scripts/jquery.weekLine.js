@@ -17,7 +17,7 @@
 		singleDaySelect: false,
 		allowDeselect: true,
 		// dark, white, jquery-ui
-		theme: "dark",
+		theme: "jquery-ui",
 		onChange: null
 	};
 

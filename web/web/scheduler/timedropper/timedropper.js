@@ -14,7 +14,7 @@
                 _td_event = null,
                 _td_options = $.extend({
 
-                    format: 'H:mm',
+                    format: 'H',
                     autoswitch: false,
                     meridians: false,
                     mousewheel: false,
@@ -403,6 +403,12 @@
                 _td_event = setTimeout(function() {
                     _td_container.removeClass('td-show')
                 }, 300);
+
+                var h = _td_c.find('.td-time span:first').attr('data-id');
+                var m = _td_c.find('.td-time span:last').attr('data-id');
+                if ($.isFunction(_td_options.onChange)) {
+                    _td_options.onChange.call(null, h, m);
+                }
 
             });
             $(window).on('resize', function() {
