@@ -33,214 +33,42 @@
 
 <script>
 
-$('.selectpicker').selectpicker({
-  style: 'btn-info',
-  size: 4
-});
-
-
-function ttt()
-{
-
-   var cur_val = $( "#cron_result" ).val().split(" ");
-   console.log(cur_val[4]);
-
-}
 
 $(function() {
-  
-   /*$("#weekCal").weekLine({
-        onChange: function () {
-                $("#selectedDays").html(
-                        $(this).weekLine('getSelected', 'indexes')
-                );
-        }
-    });*/
-    $("#weekCal").weekLine({
-        onChange: function () { 
-            var days = $(this).weekLine('getSelected', 'indexes'); 
-            //alert($( "#alarm" ).val());
-            var cur_val = $( "#cron_result" ).val().split(" ");
-            cur_val[4] = days;
-            if (cur_val[4].trim().length == 0)
-                cur_val[4] = '*';
+    
 
-            /*console.log(days);
-            console.log(cur_val[4]);
-            console.log(cur_val.join(' '));
-            console.log("#############");
-            */
-
-            $( "#cron_result" ).val(cur_val.join(' '));
-            var log = prettyCron.toString($( "#cron_result" ).val());
-            $( "#cron_result_text" ).val(log);
-
-        }
-
-    });
-
-//http://codebits.weebly.com/plugins/category/weekline-day-picker#0
-
-    $( "#alarm" ).timeDropper({
-        onChange: function (hour, min) { alert (hour + '_' + min); }
-
-    });
-
-
-
-    var cr_str = "/5 10-20 * 11 1";
-    console.log(prettyCron.toString(cr_str));
-    $( "#cron_result" ).val(cr_str);
-    var cur_val = $( "#cron_result" ).val().split(" ");
-    console.log(cur_val[4]);
-
+   
 
 });
 
-var s = later.parse.cron("adada");
-alert("s");
-
-//var cur_val = $( "#cron_result" ).val().split(" ");
-//console.log(cur_val[4]);
-
+var result_field_id = "#tt1";
 
 </script>
 
 
-
-<script>
- function collapsElement(id) {
- if ( document.getElementById(id).style.display != "none" ) {
- document.getElementById(id).style.display = 'none';
- }
- else {
- document.getElementById(id).style.display = '';
- //document.getElementById(id).slideDown('slow');
-
- }
- }
- </script>
-
-<style>
-
-.foo {
-    line-height: 50px;
-    border: solid black 1px;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-</style>
-
-
-<script>
-
-function t1(dt,dt2)
-{
-
-}
-
-</script>
 
 </head>
 <body>
   
 
-<div><a class="open-content" href="javascript:collapsElement('opencontent')" title="" rel="nofollow">Периодическое</a>
-    <div id="opencontent" style="display: none">
-            
-        <table>
-            <tr>
-                <td>    
-                    <div class="form-group">
-                        <span id="weekCal" class="form-control"></span>
-                    </div>
-                </td>
-            </tr>
 
-            <tr>
-                <td>    
-                    <div class="form-group">
-                        <input type="text" class="form-control" id="alarm" />
-                    </div>
-                </td>
-                <td>
-                    <div class="form-group">
-                        <input type="checkbox" class="form-control" id="every_time" >adads</input>
-                    </div>
+<p><a class="btn btn-success signup" data-userid="22" >t</a></p>
+<input type='text' class="form-control" id="tt1" />
 
-                </td>
-            </tr>
+<div class="modal fade" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+       <div class="modal-body">
 
-        </table>    
+        {% include 'modal_cron_expression_helper.twig' %}
 
-            
-            <!-- <textarea id="selectedDays" rows="3" cols="30" style=""></textarea> -->
-            
-
-        
-    </div>
-</div>
+       </div>
+     </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 
-<div><a class="open-content" href="javascript:collapsElement('opencontent2')" title="" rel="nofollow">Разовое</a>
-    <div id="opencontent2" style="display: none">
-        <div class="form-group">
-            <div class='input-group date' id='datetimepicker1'>
-                <input type='text' class="form-control" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-            </div>
-
-            <script type="text/javascript">
-                $(function () {
-                    $('#datetimepicker1').datetimepicker({
-                        locale: 'ru',
-                        format: "YYYY-MM-DD H:mm:ss"
-                    });
-
-                    $('#datetimepicker1').on('dp.change', function(e) {
-                            //alert(e.date);
-                            //var tmpdate = e.date._d.toISOString();
-                            //alert(tmpdate);
-                            //var dt = moment(e.date).format("YYYY-MM-DD H:mm:ss");
-                            //alert(dt);
-                        });
-                });
-            </script>
-        </div>
-    </div>
-</div>
-  
-
-
-<div><a class="open-content" href="javascript:collapsElement('opencontent3')" title="" rel="nofollow">Кастомное</a>
-    <div id="opencontent3" style="display: none">
-        <div class="form-group">
-            <input type="text" id='cron_custom' class='form-control'/>
-        </div>
-    </div>
-</div>
-
-<div class="form-group">
-    <table>
-        <tr>
-        <td>
-            <input type="text" id='cron_result' class='form-control' readonly />
-        </td>
-        </tr>
-
-        <tr>
-        <td>
-            <input type="text" id='cron_result_text' class='form-control' readonly />
-        </td>
-        </tr>
-    </table>
-
-    
-</div>
 
 
 </body>

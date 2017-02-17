@@ -15,12 +15,20 @@
 
 
 <script type="text/javascript" src="moment-2.17.1/min/moment.min.js"></script>
+<script type="text/javascript" src="moment-2.17.1/locale/ru.js"></script>
 <script type="text/javascript" src="bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 <link rel="stylesheet" href="bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" type="text/css">
 
 <link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/weekline/styles/jquery.weekLine.css" />
 <link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/weekline/styles/cleanslate.css" />
 <script type="text/javascript" src="/frontend/web/scheduler/weekline/scripts/jquery.weekLine.js"></script>
+
+<script src="/frontend/web/scheduler/timedropper/timedropper.js"></script>
+<link rel="stylesheet" type="text/css" href="/frontend/web/scheduler/timedropper/timedropper.css"> 
+
+
+<script src="/frontend/web/scheduler/later/later.min.js" type="text/javascript"></script>
+<script src="/frontend/web/scheduler/prettycron/prettycron.js" type="text/javascript"></script>
 
 <script>
 
@@ -30,10 +38,20 @@ $('.selectpicker').selectpicker({
 });
 
 $(function() {
-  $("#weekCal").weekLine(); 
+    
+
+    $('.signup').click(function(event){ // нажатие на кнопку - выпадает модальное окно
+        event.preventDefault();
+         
+        var modalContainer = $('#my-modal');
+        modalContainer.modal({show:true});
+        
+    });
+
 });
 
 </script>
+
 
 
 </head>
@@ -42,10 +60,17 @@ $(function() {
 
     {% include 'header_template.twig' %}
 
-<div>
-<span id="weekCal" class="cleanslate weekDays-dark weekCal"></span>
-</div>
+<div class="modal fade" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog modal-lg">
+     <div class="modal-content">
+       <div class="modal-body">
 
+        {% include 'modal_cron_expression_helper.twig' %}
+
+       </div>
+     </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 
@@ -127,25 +152,26 @@ $(function() {
                 </div>
 
 
-                <input type="radio" name="is_periodic" value="1" checked>yes<br>
-                <input type="radio" name="is_periodic" value="0">no<br>
 
-                <input type="radio" name="is_periodic" id="always" value="1"/>
-                <label for="always">no</label>
-
-                <input type="radio" name="is_periodic" id="never" value="0"/>
-                <label for="never">yes</label>
-
-                <div class='input-group date' id='datetimepicker1'>
-                                <input type='text' class="form-control" />
+                <div class='input-group date' id='datetimepicker2'>
+                                <input type='text' class="form-control" id="tt1" />
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                                <span class="input-group">
+                                    <span class="glyphicon glyphicon-time signup"></span>
                                 </span>
                             </div>
 
                             <script type="text/javascript">
                         $(function () {
-                            $('#datetimepicker1').datetimepicker();
+                            $('#datetimepicker2').datetimepicker({
+                                locale: 'ru',
+                                format: "YYYY-MM-DD H:mm:ss",
+                                //keepInvalid: true,
+                                defaultDate: 'now',
+                                showTodayButton: true
+                            });
                         });
                     </script>
 

@@ -1,0 +1,272 @@
+
+<script>
+
+$('.selectpicker').selectpicker({
+  style: 'btn-info',
+  size: 4
+});
+
+
+var check_field_id = "#cron_result";
+//var result_field_id = "#tt1";
+var days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+
+
+function isValidCrontab()
+{
+    const regex = /^(([0-9]+|\*|[0-9]+-[0-9]+|([0-9]+,[0-9]?)+|\*\/[0-9]+)\s+){4}([0-9]+|\*|[0-9]+-[0-9]+|([0-9]+,[0-9]?)+|\*\/[0-9]+)\s*$/g;
+    var result = (regex.exec($( check_field_id ).val()) !== null);
+    //https://regex101.com/
+    console.log("is valid crontab - " + result);
+    return result;
+}
+
+function isValidDate(str) {
+  return (Date.parse(str) > 0) ? true : false;
+}
+
+function change_cron_res(pos, val)
+{
+    if (!isValidCrontab())
+    {
+        $( check_field_id ).val('* * * * *');
+    }
+    
+    var cur_val = $( check_field_id ).val().split(" ");
+    cur_val[pos] = val;
+    if (cur_val[pos].trim().length == 0)
+        cur_val[pos] = '*';
+    
+    $( check_field_id ).val(cur_val.join(' '));
+    var log = prettyCron.toString($( check_field_id ).val());
+    $( "#cron_result_text" ).val(log);
+}
+
+
+
+function setvals()
+{
+    var cur_val = $( check_field_id ).val().split(" ");
+    if (isValidDate($( check_field_id ).val()))
+    {
+        $("#date_time_inp").val(cur_val);
+    }   
+    else
+    {
+        if (!isValidCrontab())
+        {
+            $( check_field_id ).val('* * * * *');
+            cur_val = $( check_field_id ).val().split(" ");
+        }
+        
+        $("#alarm_minute").val(cur_val[0]);
+        $("#alarm_hour").val(cur_val[1]);
+        $("#alarm_day_of_month").val(cur_val[2]);
+        $("#alarm_month").val(cur_val[3]);
+
+        var ind = cur_val[4].split(',');
+        var t = days.filter(function(x, i) { return (ind.indexOf(i.toString()) >= 0);  });
+        $("#weekCal").weekLine('setSelected', t.join(','));
+    }
+}
+
+$(function() {
+    
+     $('.signup').click(function(event){ // нажатие на кнопку - выпадает модальное окно
+        event.preventDefault();
+        $( check_field_id ).val($( result_field_id ).val()); 
+        setvals();
+
+        var modalContainer = $('#my-modal');
+        modalContainer.modal({show:true});
+        
+    });
+
+     $('.submit_m').click(function(event){ // нажатие на кнопку - выпадает модальное окно
+        event.preventDefault();
+        $( result_field_id ).val($( check_field_id ).val()); 
+        var modalContainer = $('#my-modal');
+        //modalContainer.modal({show:false});
+        setTimeout(function() { // скрываем modal через 2 секунды
+            $("#my-modal").modal('hide');
+            }, 200);
+    });
+
+    $("#alarm_minute").on('change', function(e){
+       var that = this;
+       //alert($(that).val());
+       change_cron_res(0, $(that).val());
+    });  
+
+    $("#alarm_hour").on('change', function(e){
+       var that = this;
+       //alert($(that).val());
+       change_cron_res(1, $(that).val());
+    });
+
+    $("#alarm_day_of_month").on('change', function(e){
+       var that = this;
+       //alert($(that).val());
+       change_cron_res(2, $(that).val());
+    });
+
+    $("#alarm_month").on('change', function(e){
+       var that = this;
+       //alert($(that).val());
+       change_cron_res(3, $(that).val());
+    });
+
+    $("#weekCal").weekLine({
+        onChange: function () { 
+            var days = $(this).weekLine('getSelected', 'indexes'); 
+            //alert($( "#alarm" ).val());
+            change_cron_res(4, days);
+        },
+        dayLabels: days
+
+    });
+
+    
+
+//http://codebits.weebly.com/plugins/category/weekline-day-picker#0
+
+    $( "#alarm" ).timeDropper({
+        onChange: function (hour, min) { alert (hour + '_' + min); }
+
+    });
+});
+
+</script>
+
+
+
+<script>
+ function collapsElement(id) {
+ if ( document.getElementById(id).style.display != "none" ) {
+ document.getElementById(id).style.display = 'none';
+ }
+ else {
+ document.getElementById(id).style.display = '';
+ //document.getElementById(id).slideDown('slow');
+
+ }
+ }
+ </script>
+
+
+
+<div><a class="open-content" href="javascript:collapsElement('opencontent')" title="" rel="nofollow">Периодическое</a>
+    <!-- <div id="opencontent" style="display: none" class="form-group" > -->
+    <div id="opencontent" class="form-group" >         
+        <table class="table form-group">
+            <tr>
+                <td>    
+                    <div class="form-group">
+                        <label>Дни недели</label>
+                        <span id="weekCal" class="form-control"></span>
+                    </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>    
+                    <div class="form-group">
+                        <label for="alarm_hour">Часы</label>
+                        <input type="text" class="form-control" id="alarm_hour" />
+                    </div>
+                </td>
+                <td>    
+                    <div class="form-group">
+                        <label for="alarm_minute">Минуты</label>
+                        <input type="text" class="form-control" id="alarm_minute" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>    
+                    <div class="form-group">
+                        <label for="alarm_day_of_month">Число месяца</label>
+                        <input type="text" class="form-control" id="alarm_day_of_month" />
+                    </div>
+                </td>
+                <td>    
+                    <div class="form-group">
+                        <label for="alarm_month">Месяцы</label>
+                        <input type="text" class="form-control" id="alarm_month" />
+                    </div>
+                </td>
+                <!--
+                <td>
+                    <div class="form-group">
+                        <input type="checkbox" class="form-control" id="every_time" >adads</input>
+                    </div>
+
+                </td> -->
+            </tr>
+
+        </table>    
+
+            
+            <!-- <textarea id="selectedDays" rows="3" cols="30" style=""></textarea> -->
+            
+
+        
+    </div>
+</div>
+
+
+<div><a class="open-content" href="javascript:collapsElement('opencontent2')" title="" rel="nofollow">Разовое</a>
+    <div id="opencontent2" style="display: none">
+        <table class="form-group">
+            <div class='input-group date' id='datetimepicker1'>
+                <input type='text' class="form-control" id="date_time_inp"/>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+
+            <script type="text/javascript">
+                $(function () {
+                    $('#datetimepicker1').datetimepicker({
+                        locale: 'ru',
+                        format: "YYYY-MM-DD H:mm:ss"
+                    });
+
+                    $('#datetimepicker1').on('dp.change', function(e) {
+                            //alert(e.date);
+                            //var tmpdate = e.date._d.toISOString();
+                            //alert(tmpdate);
+                            var dt = moment(e.date).format("YYYY-MM-DD H:mm:ss");
+                            $( check_field_id ).val(dt);
+                            //alert(dt);
+                        });
+                });
+            </script>
+        </table>
+    </div>
+</div>
+
+
+<div>
+    <table class="table">
+        <tr>
+        <td>
+            <input type="text" id='cron_result' class='form-control' readonly />
+        </td>
+        </tr>
+
+        <tr>
+        <td>
+            <input type="text" id='cron_result_text' class='form-control' readonly />
+        </td>
+        </tr>
+        <tr>
+            <td>
+                <p><a class="btn btn-success submit_m">Ok</a></p>
+            </td>
+        </tr>
+
+    </table>
+
+    
+</div>
