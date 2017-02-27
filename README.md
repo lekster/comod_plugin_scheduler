@@ -11,3 +11,5 @@ options c выбором разовая/периодическая с кален
 Несколько крон-выражений для одной задачи
 
 http://www.daterangepicker.com/#options
+    //https://regex101.com/
+//http://codebits.weebly.com/plugins/category/weekline-day-picker#0
