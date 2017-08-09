@@ -1,2 +1,2 @@
 drop table if exists plugins.scheduler_jobs;
-drop table if exists plugins.scheduler_jobs_template;
+drop table if exists plugins.scheduler_job_template;
