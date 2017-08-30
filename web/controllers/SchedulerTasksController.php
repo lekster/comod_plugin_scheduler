@@ -15,7 +15,7 @@ use yii\web\Controller;
  * Date: 20.12.15
  * Time: 20:56
  */
-class TasksController extends Controller
+class SchedulerTasksController extends Controller
 {
     private static $tasks_controllers_folder;
     private static $tasks_namespace;
