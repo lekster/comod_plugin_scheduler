@@ -16,18 +16,11 @@ use common\models\SchedulerJobTemplate;
 use common\models\SchedulerJobs;
 use common\models\Tasks;
 
-chdir(GIRAR_BASE_DIR);
-date_default_timezone_set('Europe/Moscow');
-set_time_limit(0);
-
-
-
-
 class SchedulerController extends Controller
 {
 	public function actionRun()
 	{
-		$tasks = SchedulerJobTemplate::find()->where(["<=", 'next_run_time', "now()"])->andWhere(["is_active" => true]) ->all();
+		$tasks = SchedulerJobTemplate::find()->where(["<=", 'next_run_time', date("Y-m-d H:i:s")])->andWhere(["is_active" => true]) ->all();
 		foreach ($tasks as $task)
 		{
 			$obj = Objects::find()->where(['id' => $task->object_id])->one();
@@ -42,7 +35,15 @@ class SchedulerController extends Controller
 
 				switch ($task->type_action) {
 					case SchedulerJobTemplate::TASK_ACTION_CHANGE:
-						 $obj->setValueByPropertyId($task->property_id, $task->value_at_start);
+						//создавать таск!
+						 //$obj->setValueByPropertyId($task->property_id, $task->value_at_start);
+						  $t = new Tasks();
+				          $t->type = Tasks::TYPE_SET_OBJECT_VAL;
+				          $t->params = json_encode(['name' => $obj->title, 'property_name' => $prop->title, 'value' => $task->value_at_start]);
+				          $t->date_to_run = date('Y-m-d H:i:s', time());
+				          $t->groups = md5($obj->title . "|" . $prop->title);
+				          $t->save();	
+
 
 						  $sj = new SchedulerJobs();
 				          $sj->scheduler_job_template_id = $task->scheduler_job_template_id;
@@ -83,6 +84,7 @@ class SchedulerController extends Controller
 			}
 			catch (\Exception $e)
 			{
+				Yii::error($e->getMessage());
 				$transaction->rollback(); 
 			}
 		}	
