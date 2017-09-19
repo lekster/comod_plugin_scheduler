@@ -1,7 +1,8 @@
 --drop table plugins.scheduler_jobs
 --drop table plugins.scheduler_jobs_template
 
-CREATE TABLE plugins.scheduler_job_template
+/*
+CREATE TABLE IF NOT EXISTS plugins.scheduler_job_template 
 (
   scheduler_job_template_id bigserial NOT NULL,
   name character varying(255) NOT NULL,
@@ -37,9 +38,9 @@ GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE plugins.scheduler_job_template TO 
 GRANT ALL ON TABLE plugins.scheduler_job_template_scheduler_job_template_id_seq TO postgres;
 GRANT SELECT, UPDATE ON TABLE plugins.scheduler_job_template_scheduler_job_template_id_seq TO public;
 GRANT SELECT, UPDATE ON TABLE plugins.scheduler_job_template_scheduler_job_template_id_seq TO inform;
+*/
 
-
-CREATE TABLE plugins.scheduler_jobs
+CREATE TABLE IF NOT EXISTS plugins.scheduler_jobs 
 (
   scheduler_job_id bigserial NOT NULL,
   scheduler_job_template_id bigint not null,
@@ -49,9 +50,9 @@ CREATE TABLE plugins.scheduler_jobs
   task_start_id bigint,
   task_end_id bigint,
   CONSTRAINT scheduler_job_id_pkey PRIMARY KEY (scheduler_job_id),
-  CONSTRAINT scheduler_job_template_id_fkey FOREIGN KEY (scheduler_job_template_id)
+  /*CONSTRAINT scheduler_job_template_id_fkey FOREIGN KEY (scheduler_job_template_id)
       REFERENCES plugins.scheduler_job_template (scheduler_job_template_id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+      ON UPDATE NO ACTION ON DELETE NO ACTION,*/
   CONSTRAINT task_start_id_fkey FOREIGN KEY (task_start_id)
       REFERENCES tasks (task_id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,

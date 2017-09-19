@@ -11,6 +11,8 @@ use common\models\Device;
 use common\models\Properties;
 use common\models\PValues;
 use common\models\Objects;
+use common\models\Classes;
+use common\models\ComodObject;
 use src\helpers\SysHelper;
 use common\models\SchedulerJobTemplate;
 use common\models\SchedulerJobs;
@@ -18,9 +20,39 @@ use common\models\Tasks;
 
 class SchedulerController extends Controller
 {
+	
+	public function actionInstall()
+	{
+		$cronClass = Classes::find()->where(["title" => "Cron"])->one();
+		if (!is_object($cronClass))
+		{
+			$cronClass = new Classes();
+			$cronClass->title = "Cron";
+			$cronClass->save();
+		}
+		//find and set properties
+		$props = ["next_run_time", 'is_active', 'start_at', 'work_time', 'type_action'];
+		foreach ($props as $value)
+		{
+			$obj = Properties::find()->where(['title' => $value, "class_id" => $cronClass->id])->one();
+			if (!is_object($obj))
+			{
+				$obj = new Properties();
+				$obj->title = $value;
+				$obj->class_id = $cronClass->id;
+				$obj->save();
+			}
+		}
+	}
+
 	public function actionRun()
 	{
-		$tasks = SchedulerJobTemplate::find()->where(["<=", 'next_run_time', date("Y-m-d H:i:s")])->andWhere(["is_active" => true]) ->all();
+		//$tasks = SchedulerJobTemplate::find()->where(["<=", 'next_run_time', date("Y-m-d H:i:s")])->andWhere(["is_active" => true]) ->all();
+			
+		$tasks = ComodObject::find()->where(["<=", 'next_run_time', date("Y-m-d H:i:s")])->andWhere(["is_active" => 1])
+			->andWhere(["class" => "Cron"])
+			->all();
+
 		foreach ($tasks as $task)
 		{
 			$obj = Objects::find()->where(['id' => $task->object_id])->one();
@@ -46,8 +78,9 @@ class SchedulerController extends Controller
 
 
 						  $sj = new SchedulerJobs();
-				          $sj->scheduler_job_template_id = $task->scheduler_job_template_id;
-				          
+				          $sj->scheduler_job_template_id = $task->id; //$task->scheduler_job_template_id;
+				          $sj->task_start_id = $t->task_id;
+
 						  if ($task->work_time > 0)
 						  {
 							  $t = new Tasks();
