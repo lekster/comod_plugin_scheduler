@@ -31,7 +31,8 @@ class SchedulerController extends Controller
 			$cronClass->save();
 		}
 		//find and set properties
-		$props = ["next_run_time", 'is_active', 'start_at', 'work_time', 'type_action'];
+		$props = ["next_run_time", 'is_active', 'start_at', 'work_time', 'type_action', 
+		'value_at_start', 'value_at_end', 'object_id', 'property_id'];
 		foreach ($props as $value)
 		{
 			$obj = Properties::find()->where(['title' => $value, "class_id" => $cronClass->id])->one();

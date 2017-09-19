@@ -1,2 +1,3 @@
 #example
 #0 0 * * * logrotate.sh "21231" '1232131'
+* * * * * scheduler/run
