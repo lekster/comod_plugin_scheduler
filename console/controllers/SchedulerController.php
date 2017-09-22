@@ -31,14 +31,27 @@ class SchedulerController extends Controller
 			$cronClass->save();
 		}
 		//find and set properties
-		$props = ["next_run_time", 'is_active', 'start_at', 'work_time', 'type_action'];
-		foreach ($props as $value)
+		$props = ["next_run_time" => ['type' => 'datetime', 'options' => "{\"options\":{\"data-viewformat\":\"yyyy-mm-dd hh:ii:ss\",\"data-format\":\"yyyy-mm-dd hh:ii:ss\",
+\"data-datetimepicker\":\"{'todayBtn':'true', 'autoclose':'true', 'minuteStep':1, 'language':'ru', 'weekStart':1, 'todayHighlight':'true'  }\"}}"], 
+		 			'is_active'  =>['type' => 'select', 'options' => "{\"options\":{\"data-source\":\"['1','0']\"}}"], 
+		 			'start_at'  => ['type' => 'text', 'options' => "{\"options\":{\"data-validate\":\"/frontend/web/scheduler/validatecronformat\"}}"], 
+		 			'work_time'  =>['type' => 'number', 'options' => null], 
+		 			'type_action'  => ['type' => 'select', 'options' => "{\"options\":{\"data-source\":\"{1: 'TASK_ACTION_CHANGE', 2: 'TASK_ACTION_REVERT'}\"}}"], 
+		 			'object_id'  => ['type' => 'text', 'options' => null], 
+		 			'property_id'  => ['type' => 'text', 'options' => null], 
+		 			'value_at_start'  => ['type' => 'text', 'options' => null], 
+		 			'value_at_end'  => ['type' => 'text', 'options' => null], 
+
+		 			];
+		foreach ($props as $value => $opt)
 		{
 			$obj = Properties::find()->where(['title' => $value, "class_id" => $cronClass->id])->one();
 			if (!is_object($obj))
 			{
 				$obj = new Properties();
 				$obj->title = $value;
+				$obj->type = $opt['type'];
+				$obj->options = $opt['options'];
 				$obj->class_id = $cronClass->id;
 				$obj->save();
 			}

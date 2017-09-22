@@ -205,6 +205,34 @@ class SchedulerController extends Controller
     }
 
 
+    public function actionValidatecronformat($value)
+    {
+
+
+      $result = "";
+      try
+      {
+        $cron_result = true;
+        $cron = \Cron\CronExpression::factory($value);
+      }
+      catch (\InvalidArgumentException $e)
+      {
+        $cron_result = false;
+        $result = $e->getMessage();
+        
+      }
+
+      $strtotimeResult = !(strtotime($value, 0) === false);
+
+      if (!($cron_result || $strtotimeResult))
+        Yii::$app->response->statusCode = 500;  
+
+      return $result;
+
+    }
+
+
+
     public function actionValidate()
     {
         $param = array_keys($_GET)[0];
