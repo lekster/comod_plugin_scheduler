@@ -37,10 +37,9 @@ class SchedulerController extends Controller
 		 			'start_at'  => ['type' => 'text', 'options' => "{\"options\":{\"data-validate\":\"/frontend/web/scheduler/validatecronformat\"}}"], 
 		 			'work_time'  =>['type' => 'number', 'options' => null], 
 		 			'type_action'  => ['type' => 'select', 'options' => "{\"options\":{\"data-source\":\"{1: 'TASK_ACTION_CHANGE', 2: 'TASK_ACTION_REVERT'}\"}}"], 
-		 			'object_id'  => ['type' => 'text', 'options' => null], 
-		 			'property_id'  => ['type' => 'text', 'options' => null], 
 		 			'value_at_start'  => ['type' => 'text', 'options' => null], 
 		 			'value_at_end'  => ['type' => 'text', 'options' => null], 
+		 			'linked_object'  => ['type' => 'selectbs', 'options' => "{\"options\":{\"data-source\":\"/frontend/web/objects/getallobjandprops\"}}"], 
 
 		 			];
 		foreach ($props as $value => $opt)
@@ -68,15 +67,15 @@ class SchedulerController extends Controller
 
 		foreach ($tasks as $task)
 		{
-			$obj = Objects::find()->where(['id' => $task->object_id])->one();
-			$prop = Properties::find()->where(['id' => $task->property_id])->one();
-
-
 			$connection = Yii::$app->getDb();
 			$transaction = $connection->beginTransaction();
 
 			try
 			{
+				list($object_id, $property_id) = explode(":", $task->linked_object);
+
+				$obj = Objects::find()->where(['id' => $object_id])->one();
+				$prop = Properties::find()->where(['id' => $property_id])->one();
 
 				switch ($task->type_action) {
 					case SchedulerJobTemplate::TASK_ACTION_CHANGE:
@@ -130,6 +129,7 @@ class SchedulerController extends Controller
 			}
 			catch (\Exception $e)
 			{
+				Yii::error("task fail|id - " . $task->id);
 				Yii::error($e->getMessage());
 				$transaction->rollback(); 
 			}
