@@ -90,7 +90,7 @@ class SchedulerController extends Controller
 
 
 						  $sj = new SchedulerJobs();
-				          $sj->scheduler_job_template_id = $task->id; //$task->scheduler_job_template_id;
+				          $sj->scheduler_job_template_id = $task->__id; //$task->scheduler_job_template_id;
 				          $sj->task_start_id = $t->task_id;
 
 						  if ($task->work_time > 0)
